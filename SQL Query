@@ -1,0 +1,56 @@
+Project Title:  Customer Conversion Funnel Analysis
+Tools Used: MySQL
+
+1.Funnel Stage Count (Drop-off Analysis)
+SELECT 
+    Event,
+    COUNT(*) AS total_users
+FROM funnel_data
+GROUP BY Event
+ORDER BY FIELD(Event, 'Browser', 'Product View', 'Add to Cart', 'Checkout', 'Purchase');
+Output:
+ 
+
+2.Conversion by Channel
+SELECT 
+    Channel,
+    COUNT(DISTINCT CASE WHEN Event = 'Purchase' THEN user_id END) AS purchases,
+    COUNT(DISTINCT user_id) AS total_users,
+    ROUND(
+        COUNT(DISTINCT CASE WHEN Event = 'Purchase' THEN user_id END) * 100.0 /
+        COUNT(DISTINCT user_id), 2
+    ) AS conversion_rate
+FROM funnel_data
+GROUP BY Channel
+ORDER BY conversion_rate DESC;
+Output:
+ 
+
+
+3.Revenue Analysis by Category
+SELECT 
+    product_category,
+    SUM(Revenue) AS total_revenue,
+    COUNT(*) AS total_orders
+FROM funnel_data
+WHERE Event = 'Purchase'
+GROUP BY product_category
+ORDER BY total_revenue DESC;
+Output:
+ 
+
+4.Bounce Rate Analysis
+SELECT 
+    Event,
+    COUNT(CASE WHEN bounce_flag = 'yes' THEN 1 END) AS bounced_users,
+    COUNT(*) AS total_users,
+    ROUND(
+        COUNT(CASE WHEN bounce_flag = 'yes' THEN 1 END) * 100.0 / COUNT(*), 2
+    ) AS bounce_rate
+FROM funnel_data
+GROUP BY Event
+ORDER BY FIELD(Event, 'Browser', 'Product View', 'Add to Cart', 'Checkout', 'Purchase');
+Output:
+ 
+
+
